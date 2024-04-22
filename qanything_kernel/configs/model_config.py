@@ -79,11 +79,16 @@ ES_CONNECT_PARAMS = None
 ES_SIGNATURE = 'qanything/bm25_v240320'
 
 
-MYSQL_HOST_LOCAL = 'mysql-container-local'
-MYSQL_HOST_ONLINE = 'mysql-container-local'
-MYSQL_PORT = 3306
-MYSQL_USER = 'root'
-MYSQL_PASSWORD = '123456'
+# MYSQL_HOST_LOCAL = 'mysql-container-local'
+# MYSQL_HOST_ONLINE = 'mysql-container-local'
+# MYSQL_PORT = 3306
+# MYSQL_USER = 'root'
+# MYSQL_PASSWORD = '123456'
+MYSQL_HOST_LOCAL = os.environ.get('MYSQL_HOST_LOCAL')
+MYSQL_HOST_ONLINE = os.environ.get('MYSQL_HOST_ONLINE')
+MYSQL_PORT = os.environ.get('MYSQL_PORT')
+MYSQL_USER = os.environ.get('MYSQL_USER')
+MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD')
 MYSQL_DATABASE = 'qanything'
 
 llm_api_serve_model = os.getenv('LLM_API_SERVE_MODEL')

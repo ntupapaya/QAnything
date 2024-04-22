@@ -148,6 +148,13 @@ update_or_append_to_env "GPUID1" "$gpu_id1"
 update_or_append_to_env "GPUID2" "$gpu_id2"
 
 
+MYSQL_HOST_LOCAL=$(grep MYSQL_HOST_LOCAL .env | cut -d '=' -f2)
+MYSQL_HOST_ONLINE=$(grep MYSQL_HOST_ONLINE .env | cut -d '=' -f2)
+MYSQL_PORT=$(grep MYSQL_PORT .env | cut -d '=' -f2)
+MYSQL_USER=$(grep MYSQL_USER .env | cut -d '=' -f2)
+MYSQL_PASSWORD=$(grep MYSQL_PASSWORD .env | cut -d '=' -f2)
+IS_DEV=$(grep IS_DEV .env | cut -d '=' -f2)
+update_or_append_to_env "IS_DEV" "$IS_DEV"
 
 if [ $llm_api = 'cloud' ]; then
   need_input_openai_info=1
@@ -279,8 +286,14 @@ if [ -e /proc/version ]; then
     fi
     mkdir -p volumes/es/data
     chmod 777 -R volumes/es/data
-    docker-compose -p user -f docker-compose-windows.yaml up -d
-    docker-compose -p user -f docker-compose-windows.yaml logs -f qanything_local
+    if [ -n "$IS_DEV" ]; then
+      echo "Running docker-compose-dev.yaml....."
+      docker-compose -p user -f docker-compose-dev.yaml up -d qanything_local
+      docker-compose -p user -f docker-compose-dev.yaml logs -f qanything_local
+    else
+      docker-compose -p user -f docker-compose-windows.yaml up -d
+      docker-compose -p user -f docker-compose-windows.yaml logs -f qanything_local
+    fi
   else
     echo "Running under native Linux"
     if docker-compose -p user -f docker-compose-linux.yaml down |& tee /dev/tty | grep -q "services.qanything_local.deploy.resources.reservations value 'devices' does not match any of the regexes"; then

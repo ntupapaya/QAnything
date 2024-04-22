@@ -75,6 +75,7 @@ class OpenAILLM(BaseAnswer, ABC):
             "gpt-4-32k-0613",
             "gpt-4-32k",
             # "gpt-4-1106-preview",
+            "moonshot-v1-8k"
             }:
             tokens_per_message = 3
             tokens_per_name = 1

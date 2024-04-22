@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.8'
 
 services:
   elasticsearch:
@@ -86,30 +86,31 @@ services:
       - "etcd"
       - "minio"
 
-  mysql:
-    container_name: mysql-container-local
-    privileged: true
-    image: mysql
-    #     ports:
-    #       - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mysql:/var/lib/mysql
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mysql.conf:/etc/mysql/conf.d/custom.cnf
+  # mysql:
+  #   container_name: mysql-container-local
+  #   privileged: true
+  #   image: mysql
+  #   #     ports:
+  #   #       - "3306:3306"
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=123456
+  #   volumes:
+  #     - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mysql:/var/lib/mysql
+  #     - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mysql.conf:/etc/mysql/conf.d/custom.cnf
 
 
   qanything_local:
     container_name: qanything-container-local
-    image: freeren/qanything:v1.2.2
+    # image: freeren/qanything:v1.2.2
+    image: myqa:v1.0
     # runtime: nvidia
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: "all"
-              capabilities: ["gpu"]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: "all"
+    #           # capabilities: ["gpu"]
 
     command: /bin/bash -c 'if [ "${LLM_API}" = "local" ]; then /workspace/qanything_local/scripts/run_for_local_option.sh -c $LLM_API -i $DEVICE_ID -b $RUNTIME_BACKEND -m $MODEL_NAME -t $CONV_TEMPLATE -p $TP -r $GPU_MEM_UTILI; else /workspace/qanything_local/scripts/run_for_cloud_option.sh -c $LLM_API -i $DEVICE_ID -b $RUNTIME_BACKEND; fi; while true; do sleep 5; done'
 
@@ -128,7 +129,7 @@ services:
       - USER_IP=${USER_IP:-localhost}
     depends_on:
       - "standalone"
-      - "mysql"
+      # - "mysql"
       - "elasticsearch"
     tty: true
     stdin_open: true

@@ -122,15 +122,15 @@ echo "GPU ID: $gpu_id1, $gpu_id2"
 
 # 判断硬件条件与启动参数是否匹配
 # 获取显卡型号
-gpu_model=$(nvidia-smi --query-gpu=gpu_name --format=csv,noheader,nounits -i $gpu_id1)
-# compute_capability=$(jq -r ".[\"$gpu_model\"]" /workspace/qanything_local/scripts/gpu_capabilities.json)
-# 执行Python脚本，传入设备号，并捕获输出
-compute_capability=$(python3 scripts/get_cuda_capability.py $gpu_id1)
-status=$?  # 获取Python脚本的退出状态码
-if [ $status -ne 0 ]; then
-    echo "您的显卡型号 $gpu_model 获取算力时出错，请联系技术支持。"
-    exit 1
-fi
+# gpu_model=$(nvidia-smi --query-gpu=gpu_name --format=csv,noheader,nounits -i $gpu_id1)
+# # compute_capability=$(jq -r ".[\"$gpu_model\"]" /workspace/qanything_local/scripts/gpu_capabilities.json)
+# # 执行Python脚本，传入设备号，并捕获输出
+# compute_capability=$(python3 scripts/get_cuda_capability.py $gpu_id1)
+# status=$?  # 获取Python脚本的退出状态码
+# if [ $status -ne 0 ]; then
+#     echo "您的显卡型号 $gpu_model 获取算力时出错，请联系技术支持。"
+#     exit 1
+# fi
 echo "GPU1 Model: $gpu_model"
 echo "Compute Capability: $compute_capability"
 
@@ -143,11 +143,11 @@ echo "OCR_USE_GPU=$OCR_USE_GPU because $compute_capability >= 7.5"
 update_or_append_to_env "OCR_USE_GPU" "$OCR_USE_GPU"
 
 # 使用nvidia-smi命令获取GPU的显存大小（以MiB为单位）
-GPU1_MEMORY_SIZE=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits -i $gpu_id1)
-if [ "$GPU1_MEMORY_SIZE" -lt 4000 ]; then # 显存小于4GB
-    echo "您当前的显存为 $GPU1_MEMORY_SIZE MiB 不足以部署本项目，建议升级到4G显存及以上的显卡"
-    exit 1
-fi
+# GPU1_MEMORY_SIZE=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits -i $gpu_id1)
+# if [ "$GPU1_MEMORY_SIZE" -lt 4000 ]; then # 显存小于4GB
+#     echo "您当前的显存为 $GPU1_MEMORY_SIZE MiB 不足以部署本项目，建议升级到4G显存及以上的显卡"
+#     exit 1
+# fi
 
 
 echo "The embed and rerank model will start on $gpu_id1 GPU"
@@ -166,8 +166,10 @@ CUDA_VISIBLE_DEVICES=$gpu_id2 nohup python3 -u qanything_kernel/dependent_server
 echo "The ocr service is ready! (3/8)"
 echo "OCR服务已就绪! (3/8)"
 
-pip install third_party/es/whl/elastic_transport-8.12.0-py3-none-any.whl
-pip install third_party/es/whl/elasticsearch-8.12.1-py3-none-any.whl
+pip install elastic-transport
+pip install elasticsearch
+# pip install third_party/es/whl/elastic_transport-8.12.0-py3-none-any.whl
+# pip install third_party/es/whl/elasticsearch-8.12.1-py3-none-any.whl
 
 nohup python3 -u qanything_kernel/qanything_server/sanic_api.py --mode "online" > /workspace/qanything_local/logs/debug_logs/sanic_api.log 2>&1 &
 

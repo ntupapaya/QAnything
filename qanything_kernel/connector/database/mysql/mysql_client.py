@@ -75,7 +75,8 @@ class KnowledgeBaseManager:
         query = """
             CREATE TABLE IF NOT EXISTS User (
                 user_id VARCHAR(255) PRIMARY KEY,
-                user_name VARCHAR(255)
+                user_name VARCHAR(255),
+                password VARCHAR(255)
             );
         """
 
@@ -130,6 +131,12 @@ class KnowledgeBaseManager:
         debug_logger.info("check_user_exist {}".format(result))
         return result is not None and len(result) > 0
 
+    def get_user(self, user_id):
+        query = "SELECT user_id, password FROM User WHERE user_id = %s"
+        result = self.execute_query_(query, (user_id,), fetch=True)
+        debug_logger.info("get_user {}".format(result))
+        return result
+    
     def check_kb_exist(self, user_id, kb_ids):
         # 使用参数化查询
         placeholders = ','.join(['%s'] * len(kb_ids))

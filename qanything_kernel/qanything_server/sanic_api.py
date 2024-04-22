@@ -73,6 +73,7 @@ async def init_local_doc_qa(app, loop):
 
 
 app.add_route(document, "/api/docs", methods=['GET'])
+app.add_route(login, "/api/login", methods=['POST'])
 app.add_route(new_knowledge_base, "/api/local_doc_qa/new_knowledge_base", methods=['POST'])  # tags=["新建知识库"]
 app.add_route(upload_weblink, "/api/local_doc_qa/upload_weblink", methods=['POST'])  # tags=["上传网页链接"]
 app.add_route(upload_files, "/api/local_doc_qa/upload_files", methods=['POST'])  # tags=["上传文件"] 
@@ -86,4 +87,4 @@ app.add_route(delete_knowledge_base, "/api/local_doc_qa/delete_knowledge_base", 
 app.add_route(rename_knowledge_base, "/api/local_doc_qa/rename_knowledge_base", methods=['POST'])  # tags=["重命名知识库"] 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8777, workers=10, access_log=False)
+    app.run(host='0.0.0.0', port=8777, workers=2, access_log=False, auto_reload=True)

@@ -14,11 +14,28 @@ import re
 from datetime import datetime
 import os
 
-__all__ = ["new_knowledge_base", "upload_files", "list_kbs", "list_docs", "delete_knowledge_base", "delete_docs",
+__all__ = ["login", "new_knowledge_base", "upload_files", "list_kbs", "list_docs", "delete_knowledge_base", "delete_docs",
            "rename_knowledge_base", "get_total_status", "clean_files_by_status", "upload_weblink", "local_doc_chat",
            "document"]
 
 INVALID_USER_ID = f"fail, Invalid user_id: . user_id 必须只含有字母，数字和下划线且字母开头"
+
+async def login(req: request):
+    local_doc_qa: LocalDocQA = req.app.ctx.local_doc_qa
+    user_id = safe_get(req, 'user_id')
+    passwd = safe_get(req, 'passwd')
+    debug_logger.info(f'user_id={user_id},passwd={passwd}')
+    result = local_doc_qa.milvus_summary.get_user(user_id)
+    debug_logger.info(f'result={result}')
+    if result is None:
+        return sanic_json({"code": 2005, "msg": "user not existed"})
+    elif len(result)>1: 
+        return sanic_json({"code": 2005, "msg": "duplicated user"})
+    elif passwd != '' if result[0][1] is None else result[0][1]:
+        return sanic_json({"code": 2005, "msg": "wrong password"})
+    else:
+        return sanic_json({"code": 200, "msg": "login passed"})        
+
 
 
 async def new_knowledge_base(req: request):
