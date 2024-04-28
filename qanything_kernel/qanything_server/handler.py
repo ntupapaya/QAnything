@@ -31,7 +31,7 @@ async def login(req: request):
         return sanic_json({"code": 2005, "msg": "user not existed"})
     elif len(result)>1: 
         return sanic_json({"code": 2005, "msg": "duplicated user"})
-    elif passwd != '' if result[0][1] is None else result[0][1]:
+    elif passwd != ('' if result[0][1] is None else result[0][1]):
         return sanic_json({"code": 2005, "msg": "wrong password"})
     else:
         return sanic_json({"code": 200, "msg": "login passed"})        
